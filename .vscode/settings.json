@@ -19,4 +19,8 @@
     // ],
     "C_Cpp.clang_format_style": "file",
     "editor.formatOnSave": false,
+    "files.associations": {
+        "chrono": "cpp",
+        "typeinfo": "cpp"
+    },
 }

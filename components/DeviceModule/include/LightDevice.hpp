@@ -2,46 +2,52 @@
 
 #include "BaseDeviceInterface.hpp"
 #include "LightAccessoryInterface.hpp"
+#include <esp_err.h>
+#include <esp_matter.h>
 
 /**
- * @brief Device class for a light accessory.
+ * @brief Class representing a light device.
  */
 class LightDevice : public BaseDeviceInterface
 {
 public:
     /**
-     * @brief Construct a new LightDevice object.
+     * @brief Constructor for LightDevice.
+     * @param deviceName Optional name for the device.
+     * @param lightAccessory Pointer to the light accessory interface.
+     * @param aggregator Pointer to the aggregator endpoint.
      */
-    LightDevice();
+    LightDevice(char * deviceName = nullptr, LightAccessoryInterface * lightAccessory = nullptr,
+                esp_matter::endpoint_t * aggregator = nullptr);
 
     /**
-     * @brief Destroy the LightDevice object.
+     * @brief Destructor for LightDevice.
      */
     ~LightDevice();
 
     /**
-     * @brief Update the light accessory state.
-     *
-     * @return esp_err_t ESP_OK on success, or an appropriate error code.
+     * @brief Updates the accessory state.
+     * @return ESP_OK on success, or an error code on failure.
      */
     esp_err_t updateAccessory() override;
 
     /**
-     * @brief Report the endpoint state.
-     *
-     * @return esp_err_t ESP_OK on success, or an appropriate error code.
+     * @brief Reports the endpoint state.
+     * @return ESP_OK on success, or an error code on failure.
      */
     esp_err_t reportEndpoint() override;
 
     /**
-     * @brief Identify the light device.
-     *
-     * @return esp_err_t ESP_OK on success, or an appropriate error code.
+     * @brief Identifies the device.
+     * @return ESP_OK on success, or an error code on failure.
      */
     esp_err_t identify() override;
 
 private:
-    esp_matter::endpoint_t * m_endpoint;        ///< Endpoint associated with the light device.
-    LightAccessoryInterface * m_lightAccessory; ///< Interface for the light accessory.
-    char m_name[64];                            ///< Name of the light device.
+    esp_matter::endpoint_t * m_endpoint;
+    LightAccessoryInterface * m_lightAccessory;
+
+    bool getEndpointPowerState();
+    void setEndpointPowerState(bool powerState);
+    void configureOnOffLight();
 };

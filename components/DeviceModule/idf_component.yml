@@ -1,14 +1,13 @@
 dependencies:
-  espressif/button:
-    require: public
-    version: '3.2.0'
   idf:
-    version: '5.2.1'
+    version: '5.1.2'
+  espressif/esp_matter:
+    version: '0.0.2'
   ronny-antoon/accessorymodule:
     require: public
-    version: '1.0.0'
-description: ''
-repository: ''
-url: ''
+    version: '1.0.2'
+# description: ''
+# repository: ''
+# url: ''
 license: MIT
 version: 1.0.0
