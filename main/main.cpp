@@ -7,6 +7,7 @@
 #include <nvs_flash.h>
 
 #include <ButtonModule.hpp>
+#include <FanAccessory.hpp>
 #include <LightAccessory.hpp>
 #include <PluginAccessory.hpp>
 #include <RelayModule.hpp>
@@ -14,6 +15,7 @@
 
 #include "BaseDeviceInterface.hpp"
 #include "ButtonDevice.hpp"
+#include "FanDevice.hpp"
 #include "LightDevice.hpp"
 #include "PluginDevice.hpp"
 
@@ -44,7 +46,9 @@ esp_err_t app_attribute_cb(esp_matter::attribute::callback_type type, uint16_t e
             BaseDeviceInterface * device = static_cast<BaseDeviceInterface *>(priv_data);
             if (device != nullptr)
             {
-                device->updateAccessory();
+                // log
+                ESP_LOGI(__FILENAME__, "app_attribute_cb app_attribute_cb app_attribute_cb");
+                device->updateAccessory(attribute_id);
             }
         }
         return ESP_OK;
@@ -109,22 +113,11 @@ extern "C" void app_main()
     esp_matter::endpoint_t * aggregator =
         esp_matter::endpoint::aggregator::create(node, &aggregator_config, esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE, nullptr);
 
-    // Create a light device
-    RelayModule * relay_module1      = new RelayModule(GetRelayPin(1));
-    ButtonModule * button_module1    = new ButtonModule(GetButtonPin(1));
-    LightAccessory * light_accessory = new LightAccessory(relay_module1, button_module1);
-    LightDevice * light_device       = new LightDevice("myLight", light_accessory, aggregator);
-
-    // Create a button device
-    ButtonModule * button_module2               = new ButtonModule(GetButtonPin(2));
-    StatelessButtonAccessory * button_accessory = new StatelessButtonAccessory(button_module2);
-    ButtonDevice * button_device                = new ButtonDevice("myButton", button_accessory, aggregator);
-
-    // Create a plugin device
-    RelayModule * relay_module3        = new RelayModule(GetRelayPin(3));
-    ButtonModule * button_module3      = new ButtonModule(GetButtonPin(3));
-    PluginAccessory * plugin_accessory = new PluginAccessory(relay_module3, button_module3);
-    PluginDevice * plugin_device       = new PluginDevice("myPlugin", plugin_accessory, aggregator);
+    // Create a fan accessory
+    RelayModule * relay_module1   = new RelayModule(GetRelayPin(1));
+    ButtonModule * button_module1 = new ButtonModule(GetButtonPin(1));
+    FanAccessory * fan_accessory1 = new FanAccessory(relay_module1, button_module1);
+    FanDevice * fan_device1       = new FanDevice("Fan 1", fan_accessory1, aggregator);
 
     // start the Matter stack
     esp_matter::start(app_event_cb);

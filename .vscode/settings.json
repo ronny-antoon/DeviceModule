@@ -22,6 +22,11 @@
     "files.associations": {
         "chrono": "cpp",
         "typeinfo": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "*.tcc": "cpp",
+        "string_view": "cpp",
+        "functional": "cpp",
+        "variant": "cpp",
+        "*.ipp": "cpp"
     },
 }
