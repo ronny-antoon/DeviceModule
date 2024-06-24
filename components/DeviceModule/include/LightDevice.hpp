@@ -13,12 +13,12 @@ class LightDevice : public BaseDeviceInterface
 public:
     /**
      * @brief Constructor for LightDevice.
-     * @param deviceName Optional name for the device.
-     * @param lightAccessory Pointer to the light accessory interface.
-     * @param aggregator Pointer to the aggregator endpoint.
+     * @param name Optional name for the device.
+     * @param accessory Pointer to the light accessory interface.
+     * @param endpointAggregator Pointer to the aggregator endpoint.
      */
-    LightDevice(char * deviceName = nullptr, LightAccessoryInterface * lightAccessory = nullptr,
-                esp_matter::endpoint_t * aggregator = nullptr);
+    LightDevice(char * name = nullptr, LightAccessoryInterface * accessory = nullptr,
+                esp_matter::endpoint_t * endpointAggregator = nullptr);
 
     /**
      * @brief Destructor for LightDevice.
@@ -45,9 +45,22 @@ public:
 
 private:
     esp_matter::endpoint_t * m_endpoint;
-    LightAccessoryInterface * m_lightAccessory;
+    LightAccessoryInterface * m_accessory;
 
-    bool getEndpointPowerState();
-    void setEndpointPowerState(bool powerState);
-    void configureOnOffLight();
+    /**
+     * @brief Retrieves the power state of the endpoint.
+     * @return True if the power state is on, false otherwise.
+     */
+    bool retrieveEndpointPowerState();
+
+    /**
+     * @brief Updates the power state of the endpoint.
+     * @param powerState The new power state to set.
+     */
+    void updateEndpointPowerState(bool powerState);
+
+    /**
+     * @brief Sets up the on/off light functionality.
+     */
+    void setupOnOffLight();
 };
