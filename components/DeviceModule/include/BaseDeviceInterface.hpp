@@ -18,7 +18,7 @@ public:
      * @brief Updates the accessory state.
      * @return ESP_OK on success, or an error code on failure.
      */
-    virtual esp_err_t updateAccessory() = 0;
+    virtual esp_err_t updateAccessory(uint32_t attribute_id) = 0;
 
     /**
      * @brief Reports the endpoint state.
@@ -65,7 +65,7 @@ static esp_matter::endpoint_t * initializeBridgedNode(char * deviceName, esp_mat
  * @param endpoint Pointer to endpoint
  * @param privData Private data pointer
  */
-static esp_matter::endpoint_t *initializeStandaloneNode(void * privData)
+static esp_matter::endpoint_t * initializeStandaloneNode(void * privData)
 {
     uint8_t flags                     = esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE;
     esp_matter::endpoint_t * endpoint = esp_matter::endpoint::create(esp_matter::node::get(), flags, privData);

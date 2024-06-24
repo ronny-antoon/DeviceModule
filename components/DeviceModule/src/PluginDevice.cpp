@@ -54,7 +54,7 @@ void PluginDevice::setupOnOffPlugin()
     }
 }
 
-esp_err_t PluginDevice::updateAccessory()
+esp_err_t PluginDevice::updateAccessory(uint32_t attribute_id)
 {
     ESP_LOGI(TAG, "Updating accessory state");
     bool powerState = retrieveEndpointPowerState();
