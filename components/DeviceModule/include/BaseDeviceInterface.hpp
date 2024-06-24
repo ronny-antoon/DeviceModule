@@ -18,7 +18,7 @@ public:
      * @brief Updates the accessory state.
      * @return ESP_OK on success, or an error code on failure.
      */
-    virtual esp_err_t updateAccessory(uint32_t attribute_id) = 0;
+    virtual esp_err_t updateAccessory(uint32_t attributeId) = 0;
 
     /**
      * @brief Reports the endpoint state.

@@ -54,7 +54,7 @@ void LightDevice::setupOnOffLight()
     }
 }
 
-esp_err_t LightDevice::updateAccessory(uint32_t attribute_id)
+esp_err_t LightDevice::updateAccessory(uint32_t attributeId)
 {
     ESP_LOGI(TAG, "Updating accessory state");
     bool powerState = retrieveEndpointPowerState();

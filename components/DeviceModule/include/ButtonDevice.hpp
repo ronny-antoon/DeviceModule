@@ -29,7 +29,7 @@ public:
      * @brief Updates the accessory state.
      * @return ESP_OK on success, or an error code on failure.
      */
-    esp_err_t updateAccessory(uint32_t attribute_id) override;
+    esp_err_t updateAccessory(uint32_t attributeId) override;
 
     /**
      * @brief Reports the endpoint state.

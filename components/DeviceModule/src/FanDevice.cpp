@@ -59,9 +59,9 @@ void FanDevice::setupFan()
     }
 }
 
-esp_err_t FanDevice::updateAccessory(uint32_t attribute_id)
+esp_err_t FanDevice::updateAccessory(uint32_t attributeId)
 {
-    if (attribute_id != chip::app::Clusters::FanControl::Attributes::PercentSetting::Id)
+    if (attributeId != chip::app::Clusters::FanControl::Attributes::PercentSetting::Id)
     {
         return ESP_OK;
     }

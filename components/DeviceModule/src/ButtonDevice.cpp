@@ -51,7 +51,7 @@ void ButtonDevice::setupButton()
     esp_matter::cluster::switch_cluster::feature::momentary_switch_multi_press::add(switchCluster, &doublePressConfig);
 }
 
-esp_err_t ButtonDevice::updateAccessory(uint32_t attribute_id)
+esp_err_t ButtonDevice::updateAccessory(uint32_t attributeId)
 {
     ESP_LOGI(TAG, "Updating accessory state");
     // Implement specific accessory update logic here.

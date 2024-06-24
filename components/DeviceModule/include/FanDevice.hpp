@@ -28,9 +28,10 @@ public:
 
     /**
      * @brief Updates the accessory state.
+     * @param attributeId ID of the attribute to update.
      * @return ESP_OK on success, or an error code on failure.
      */
-    esp_err_t updateAccessory(uint32_t attribute_id) override;
+    esp_err_t updateAccessory(uint32_t attributeId) override;
 
     /**
      * @brief Reports the endpoint state.
@@ -57,6 +58,9 @@ private:
      */
     void setEndpointPowerState(bool powerState);
 
+    /**
+     * @brief Sets up the fan configuration.
+     */
     void setupFan();
 
     esp_matter::endpoint_t * m_endpoint; /**< Pointer to the esp_matter endpoint. */
