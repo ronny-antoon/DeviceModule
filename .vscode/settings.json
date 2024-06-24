@@ -27,6 +27,7 @@
         "string_view": "cpp",
         "functional": "cpp",
         "variant": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "regex": "cpp"
     },
 }

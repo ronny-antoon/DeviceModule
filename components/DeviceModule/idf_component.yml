@@ -5,7 +5,7 @@ dependencies:
     version: '0.0.2'
   ronny-antoon/accessorymodule:
     require: public
-    version: '1.0.2'
+    version: '1.0.5'
 # description: ''
 # repository: ''
 # url: ''
