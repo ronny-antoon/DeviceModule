@@ -14,7 +14,7 @@ PluginDevice::PluginDevice(char * name, PluginAccessoryInterface * accessory, es
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setReportAppCallback([](void * self) { static_cast<PluginDevice *>(self)->reportEndpoint(); }, this);
+        m_accessory->setReportCallback([](void * self) { static_cast<PluginDevice *>(self)->reportEndpoint(); }, this);
     }
     else
     {
@@ -35,7 +35,7 @@ PluginDevice::PluginDevice(char * name, PluginAccessoryInterface * accessory, es
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setPowerState(retrieveEndpointPowerState());
+        m_accessory->setPower(retrieveEndpointPowerState());
     }
 }
 

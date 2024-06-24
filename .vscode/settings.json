@@ -21,6 +21,7 @@
     "editor.formatOnSave": false,
     "files.associations": {
         "chrono": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "new": "cpp"
     },
 }
