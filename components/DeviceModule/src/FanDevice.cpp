@@ -38,9 +38,16 @@ FanDevice::FanDevice(const char * name, FanAccessoryInterface * accessory, esp_m
         esp_matter::cluster_t * fanCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::FanControl::Id);
         esp_matter::attribute_t * percentCurrentAttr =
             esp_matter::attribute::get(fanCluster, chip::app::Clusters::FanControl::Attributes::PercentCurrent::Id);
-        esp_matter_attr_val_t attrVal;
+        esp_matter_attr_val_t attrVal = esp_matter_uint8(0); // default value for percent current
 
-        m_accessory->setPower(attrVal.val.u8 != NULL && (attrVal.val.u8 > 0));
+        if (esp_matter::attribute::get_val(percentCurrentAttr, &attrVal) != ESP_OK)
+        {
+            ESP_LOGE(TAG, "Failed to get percent current attribute");
+        }
+        else
+        {
+            m_accessory->setPower(attrVal.val.u8 > 0);
+        }
     }
 }
 

@@ -101,17 +101,6 @@ extern "C" void app_main()
     esp_matter::node::config_t node_config;
     esp_matter::node_t * node = esp_matter::node::create(&node_config, app_attribute_cb, app_identification_cb);
 
-    // Create an aggregator endpoint
-    esp_matter::endpoint::aggregator::config_t aggregator_config;
-    esp_matter::endpoint_t * aggregator =
-        esp_matter::endpoint::aggregator::create(node, &aggregator_config, esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE, nullptr);
-
-    // Create a light endpoint
-    RelayModule * relayModule       = new RelayModule(GetRelayPin(1));
-    ButtonModule * buttonModule     = new ButtonModule(GetButtonPin(1));
-    LightAccessory * lightAccessory = new LightAccessory(relayModule, buttonModule);
-    LightDevice * lightDevice       = new LightDevice("Light 123", lightAccessory, aggregator);
-
     // start the Matter stack
     esp_matter::start(app_event_cb);
 }
