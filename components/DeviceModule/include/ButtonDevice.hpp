@@ -44,9 +44,21 @@ public:
     esp_err_t identify() override;
 
 private:
-    void setupButton();
+    /**
+     * @brief Initializes the button device.
+     */
+    void initializeButton();
+
+    /**
+     * @brief Sets the switch press event for the endpoint.
+     * @param pressType The type of press event.
+     */
     void setEndpointSwitchPressEvent(StatelessButtonAccessoryInterface::PressType pressType);
 
-    esp_matter::endpoint_t * m_endpoint;
-    StatelessButtonAccessoryInterface * m_accessory;
+    esp_matter::endpoint_t * m_endpoint;             /**< Pointer to the esp_matter endpoint. */
+    StatelessButtonAccessoryInterface * m_accessory; /**< Pointer to the StatelessButtonAccessory instance. */
+
+    // Delete the copy constructor and assignment operator
+    ButtonDevice(const ButtonDevice &)             = delete;
+    ButtonDevice & operator=(const ButtonDevice &) = delete;
 };

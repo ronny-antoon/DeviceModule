@@ -50,7 +50,7 @@ void WindowDevice::configureAccessoryDefaultPosition()
 {
     if (m_accessory != nullptr)
     {
-        m_accessory->setDefaultPosition((100 - getEndpointCurrentPosition()));
+        m_accessory->setDefaultPosition(100 - getEndpointCurrentPosition());
     }
 }
 
@@ -98,7 +98,7 @@ void WindowDevice::setupWindowCovering()
         esp_matter::attribute::get(windowCoveringCluster,
                                    chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id),
         &targetAttrVal);
-    ESP_LOGI(TAG, "Window covering setup complete initial position: %d", attrVal.val.u8);
+    ESP_LOGI(TAG, "Window covering setup complete, initial position: %d", attrVal.val.u8);
 }
 
 esp_err_t WindowDevice::updateAccessory(uint32_t attributeId)
@@ -117,7 +117,7 @@ esp_err_t WindowDevice::updateAccessory(uint32_t attributeId)
 
 void WindowDevice::updateAccessoryPosition()
 {
-    uint16_t targetPosition = 100 - (getEndpointTargetPosition());
+    uint16_t targetPosition = 100 - getEndpointTargetPosition();
     m_accessory->moveBlindTo(targetPosition);
     ESP_LOGD(TAG, "Moved blind to target position: %d", targetPosition);
 }
@@ -138,9 +138,9 @@ esp_err_t WindowDevice::reportEndpoint()
 
 void WindowDevice::updateCurrentAndTargetPositions()
 {
-    setEndpointCurrentPosition(100 - (m_accessory->getCurrentPosition()));
-    setEndpointTargetPosition(100 - (m_accessory->getTargetPosition()));
-    ESP_LOGD(TAG, "Reported endpoint target position: %d", 100 - (m_accessory->getTargetPosition()));
+    setEndpointCurrentPosition(100 - m_accessory->getCurrentPosition());
+    setEndpointTargetPosition(100 - m_accessory->getTargetPosition());
+    ESP_LOGD(TAG, "Reported endpoint target position: %d", 100 - m_accessory->getTargetPosition());
 }
 
 esp_err_t WindowDevice::identify()

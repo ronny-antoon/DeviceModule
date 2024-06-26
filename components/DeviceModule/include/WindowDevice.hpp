@@ -103,14 +103,15 @@ private:
     /**
      * @brief Gets the current position of the endpoint.
      *
-     * @return uint16_t The current position of the endpoint.
+     * @return uint8_t The current position of the endpoint.
      */
     uint8_t getEndpointCurrentPosition() const;
 
     /**
-     * @brief Gets the current position of the endpoint.
+     * @brief Gets the value of an attribute as a uint8_t.
      *
-     * @return uint16_t The current position of the endpoint.
+     * @param attributeId The ID of the attribute to get the value from.
+     * @return uint8_t The value of the attribute.
      */
     uint8_t getAttributeUint8Value(uint32_t attributeId) const;
 
@@ -146,4 +147,8 @@ private:
 
     esp_matter::endpoint_t * m_endpoint;   /**< Pointer to the ESP-Matter endpoint. */
     BlindAccessoryInterface * m_accessory; /**< Pointer to the blind accessory interface. */
+
+    // Delete the copy constructor and assignment operator
+    WindowDevice(const WindowDevice &)             = delete;
+    WindowDevice & operator=(const WindowDevice &) = delete;
 };

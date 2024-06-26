@@ -30,7 +30,7 @@ ButtonDevice::ButtonDevice(char * name, StatelessButtonAccessoryInterface * acce
         m_endpoint = initializeStandaloneNode(this);
     }
 
-    setupButton();
+    initializeButton();
 }
 
 ButtonDevice::~ButtonDevice()
@@ -38,7 +38,7 @@ ButtonDevice::~ButtonDevice()
     ESP_LOGI(TAG, "Destroying ButtonDevice");
 }
 
-void ButtonDevice::setupButton()
+void ButtonDevice::initializeButton()
 {
     esp_matter::endpoint::generic_switch::config_t genericSwitchConfig;
     esp_matter::endpoint::generic_switch::add(m_endpoint, &genericSwitchConfig);
@@ -62,8 +62,15 @@ esp_err_t ButtonDevice::reportEndpoint()
 {
     ESP_LOGI(TAG, "Reporting endpoint state");
 
-    StatelessButtonAccessoryInterface::PressType pressType = m_accessory->getLastPressType();
-    setEndpointSwitchPressEvent(pressType);
+    if (m_accessory != nullptr)
+    {
+        StatelessButtonAccessoryInterface::PressType pressType = m_accessory->getLastPressType();
+        setEndpointSwitchPressEvent(pressType);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "ButtonAccessory is null during report");
+    }
 
     return ESP_OK;
 }
@@ -112,6 +119,7 @@ void ButtonDevice::setEndpointSwitchPressEvent(StatelessButtonAccessoryInterface
         esp_matter::lock::chip_stack_unlock();
         break;
     default:
+        ESP_LOGE(TAG, "Unknown PressType");
         break;
     }
 }

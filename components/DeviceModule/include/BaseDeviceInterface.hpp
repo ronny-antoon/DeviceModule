@@ -47,7 +47,7 @@ static esp_matter::endpoint_t * initializeBridgedNode(char * deviceName, esp_mat
     uint8_t flags = esp_matter::endpoint_flags::ENDPOINT_FLAG_BRIDGE | esp_matter::endpoint_flags::ENDPOINT_FLAG_DESTROYABLE;
     esp_matter::endpoint_t * endpoint =
         esp_matter::endpoint::bridged_node::create(esp_matter::node::get(), &bridgedNodeConfig, flags, privData);
-    if (deviceName != nullptr && strlen(deviceName) > 0 && strlen(deviceName) < 64)
+    if (deviceName != nullptr && strlen(deviceName) > 0 && strlen(deviceName) < CONFIG_D_M_MAX_DEVICE_NAME_LEN)
     {
         esp_matter::cluster_t * bridgeDeviceBasicInformationCluster =
             esp_matter::cluster::get(endpoint, chip::app::Clusters::BridgedDeviceBasicInformation::Id);

@@ -1,0 +1,7 @@
+menu "Device Module"
+    config D_M_MAX_DEVICE_NAME_LEN
+        int "Max Device Name Length"
+        default 64
+        help
+          The maximum length of the device name.
+endmenu

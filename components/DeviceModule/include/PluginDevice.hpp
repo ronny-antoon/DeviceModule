@@ -44,10 +44,27 @@ public:
     esp_err_t identify() override;
 
 private:
+    /**
+     * @brief Retrieves the power state of the endpoint.
+     * @return True if the power state is on, false otherwise.
+     */
     bool retrieveEndpointPowerState();
+
+    /**
+     * @brief Updates the power state of the endpoint.
+     * @param powerState The new power state to set.
+     */
     void updateEndpointPowerState(bool powerState);
+
+    /**
+     * @brief Sets up the on/off plugin functionality.
+     */
     void setupOnOffPlugin();
 
-    esp_matter::endpoint_t * m_endpoint;
-    PluginAccessoryInterface * m_accessory;
+    esp_matter::endpoint_t * m_endpoint;    /**< Pointer to the esp_matter endpoint. */
+    PluginAccessoryInterface * m_accessory; /**< Pointer to the PluginAccessory instance. */
+
+    // Delete the copy constructor and assignment operator
+    PluginDevice(const PluginDevice &)             = delete;
+    PluginDevice & operator=(const PluginDevice &) = delete;
 };

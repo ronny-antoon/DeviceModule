@@ -1,5 +1,4 @@
 #include "PluginDevice.hpp"
-#include <cstdint>
 #include <esp_err.h>
 #include <esp_log.h>
 #include <esp_matter.h>
@@ -23,7 +22,7 @@ PluginDevice::PluginDevice(char * name, PluginAccessoryInterface * accessory, es
 
     if (endpointAggregator != nullptr)
     {
-        m_endpoint = initializeBridgedNode(const_cast<char *>(name), endpointAggregator, this);
+        m_endpoint = initializeBridgedNode(name, endpointAggregator, this);
     }
     else
     {
@@ -58,7 +57,6 @@ esp_err_t PluginDevice::updateAccessory(uint32_t attributeId)
 {
     ESP_LOGI(TAG, "Updating accessory state");
     bool powerState = retrieveEndpointPowerState();
-
     if (m_accessory != nullptr)
     {
         m_accessory->setPower(powerState);
@@ -68,7 +66,6 @@ esp_err_t PluginDevice::updateAccessory(uint32_t attributeId)
     {
         ESP_LOGE(TAG, "PluginAccessory is null during update");
     }
-
     return ESP_OK;
 }
 
@@ -85,7 +82,6 @@ esp_err_t PluginDevice::reportEndpoint()
     {
         ESP_LOGE(TAG, "PluginAccessory is null during report");
     }
-
     return ESP_OK;
 }
 

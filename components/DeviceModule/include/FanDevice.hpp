@@ -46,6 +46,9 @@ public:
     esp_err_t identify() override;
 
 private:
+    esp_matter::endpoint_t * m_endpoint; /**< Pointer to the esp_matter endpoint. */
+    FanAccessoryInterface * m_accessory; /**< Pointer to the FanAccessory instance. */
+
     /**
      * @brief Retrieves the power state of the endpoint.
      * @return True if the power state is on, false otherwise.
@@ -63,6 +66,7 @@ private:
      */
     void setupFan();
 
-    esp_matter::endpoint_t * m_endpoint; /**< Pointer to the esp_matter endpoint. */
-    FanAccessoryInterface * m_accessory; /**< Pointer to the FanAccessory instance. */
+    // Delete copy constructor and assignment operator
+    FanDevice(const FanDevice &)             = delete;
+    FanDevice & operator=(const FanDevice &) = delete;
 };

@@ -44,8 +44,8 @@ public:
     esp_err_t identify() override;
 
 private:
-    esp_matter::endpoint_t * m_endpoint;
-    LightAccessoryInterface * m_accessory;
+    esp_matter::endpoint_t * m_endpoint;   /**< Pointer to the esp_matter endpoint. */
+    LightAccessoryInterface * m_accessory; /**< Pointer to the PluginAccessory instance. */
 
     /**
      * @brief Retrieves the power state of the endpoint.
@@ -63,4 +63,8 @@ private:
      * @brief Sets up the on/off light functionality.
      */
     void setupOnOffLight();
+
+    // Delete the copy constructor and assignment operator
+    LightDevice(const LightDevice &)             = delete;
+    LightDevice & operator=(const LightDevice &) = delete;
 };
