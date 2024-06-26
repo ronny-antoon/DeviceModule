@@ -6,20 +6,11 @@
 #include <esp_matter.h>
 #include <nvs_flash.h>
 
-#include <BlindAccessory.hpp>
 #include <ButtonModule.hpp>
-#include <FanAccessory.hpp>
 #include <LightAccessory.hpp>
-#include <PluginAccessory.hpp>
 #include <RelayModule.hpp>
-#include <StatelessButtonAccessory.hpp>
 
-#include "BaseDeviceInterface.hpp"
-#include "ButtonDevice.hpp"
-#include "FanDevice.hpp"
 #include "LightDevice.hpp"
-#include "PluginDevice.hpp"
-#include "WindowDevice.hpp"
 
 esp_err_t app_identification_cb(esp_matter::identification::callback_type type, uint16_t endpoint_id, uint8_t effect_id,
                                 uint8_t effect_variant, void * priv_data)
@@ -115,14 +106,11 @@ extern "C" void app_main()
     esp_matter::endpoint_t * aggregator =
         esp_matter::endpoint::aggregator::create(node, &aggregator_config, esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE, nullptr);
 
-    // Create a WindowDevice
-    RelayModule * motorUp     = new RelayModule(GetRelayPin(1));
-    RelayModule * motorDown   = new RelayModule(GetRelayPin(2));
-    ButtonModule * buttonUp   = new ButtonModule(GetButtonPin(1));
-    ButtonModule * buttonDown = new ButtonModule(GetButtonPin(2));
-
-    BlindAccessory * blindAccessory = new BlindAccessory(motorUp, motorDown, buttonUp, buttonDown);
-    WindowDevice * windowDevice     = new WindowDevice("WindowDevice", blindAccessory, aggregator);
+    // Create a light endpoint
+    RelayModule * relayModule       = new RelayModule(GetRelayPin(1));
+    ButtonModule * buttonModule     = new ButtonModule(GetButtonPin(1));
+    LightAccessory * lightAccessory = new LightAccessory(relayModule, buttonModule);
+    LightDevice * lightDevice       = new LightDevice("Light 123", lightAccessory, aggregator);
 
     // start the Matter stack
     esp_matter::start(app_event_cb);

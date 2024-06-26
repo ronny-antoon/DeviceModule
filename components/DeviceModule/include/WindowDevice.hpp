@@ -100,6 +100,11 @@ private:
      */
     uint16_t getEndpointTargetPosition() const;
 
+    /**
+     * @brief Gets the current position of the endpoint.
+     *
+     * @return uint16_t The current position of the endpoint.
+     */
     uint8_t getEndpointCurrentPosition() const;
 
     /**

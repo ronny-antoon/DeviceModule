@@ -81,14 +81,23 @@ void WindowDevice::setupWindowCovering()
     esp_matter::cluster::window_covering::feature::position_aware_lift::add(windowCoveringCluster, &positionAwareLiftConfig);
     esp_matter::cluster::window_covering::feature::absolute_position::add(windowCoveringCluster, &absolutePositionConfig);
 
-        setDeferredPersistenceForAttributes(windowCoveringCluster);
+    setDeferredPersistenceForAttributes(windowCoveringCluster);
 
     // Set the initial position of the accessory
-    esp_matter_attr_val_t attrVal = esp_matter_nullable_uint8(0); 
-    esp_matter::attribute::get_val(esp_matter::attribute::get(windowCoveringCluster, chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercentage::Id), &attrVal);
+    esp_matter_attr_val_t attrVal = esp_matter_nullable_uint8(0);
+    esp_matter::attribute::get_val(
+        esp_matter::attribute::get(windowCoveringCluster,
+                                   chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercentage::Id),
+        &attrVal);
     esp_matter_attr_val_t targetAttrVal = esp_matter_nullable_uint16(attrVal.val.u8 * 100);
-    esp_matter::attribute::set_val(esp_matter::attribute::get(windowCoveringCluster, chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercent100ths::Id), &targetAttrVal);
-    esp_matter::attribute::set_val(esp_matter::attribute::get(windowCoveringCluster, chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id), &targetAttrVal);
+    esp_matter::attribute::set_val(
+        esp_matter::attribute::get(windowCoveringCluster,
+                                   chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercent100ths::Id),
+        &targetAttrVal);
+    esp_matter::attribute::set_val(
+        esp_matter::attribute::get(windowCoveringCluster,
+                                   chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id),
+        &targetAttrVal);
     ESP_LOGI(TAG, "Window covering setup complete initial position: %d", attrVal.val.u8);
 }
 
