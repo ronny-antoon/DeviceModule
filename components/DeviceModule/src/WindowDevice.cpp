@@ -19,6 +19,8 @@ WindowDevice::WindowDevice(const char * name, BlindAccessoryInterface * accessor
 WindowDevice::~WindowDevice()
 {
     ESP_LOGI(TAG, "Destroying WindowDevice");
+    // Clean up resources if needed
+    // Example: If m_endpoint or m_accessory needs explicit deallocation, do it here
 }
 
 void WindowDevice::initializeAccessory()
@@ -38,11 +40,19 @@ void WindowDevice::initializeEndpoint(const char * name, esp_matter::endpoint_t 
     if (endpointAggregator != nullptr)
     {
         m_endpoint = initializeBridgedNode(const_cast<char *>(name), endpointAggregator, this);
+        if (m_endpoint == nullptr)
+        {
+            ESP_LOGE(TAG, "Failed to initialize bridged node");
+        }
     }
     else
     {
         ESP_LOGI(TAG, "Creating WindowDevice standalone endpoint");
         m_endpoint = initializeStandaloneNode(this);
+        if (m_endpoint == nullptr)
+        {
+            ESP_LOGE(TAG, "Failed to initialize standalone node");
+        }
     }
 }
 
@@ -64,10 +74,25 @@ void WindowDevice::setDeferredPersistenceForAttributes(esp_matter::cluster_t * w
 
 void WindowDevice::setupWindowCovering()
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return;
+    }
+
     esp_matter::endpoint::window_covering_device::config_t windowCoveringConfig;
-    esp_matter::endpoint::window_covering_device::add(m_endpoint, &windowCoveringConfig);
+    if (esp_matter::endpoint::window_covering_device::add(m_endpoint, &windowCoveringConfig) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to add window covering configuration");
+        return;
+    }
 
     esp_matter::cluster_t * windowCoveringCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id);
+    if (windowCoveringCluster == nullptr)
+    {
+        ESP_LOGE(TAG, "WindowCovering cluster is null");
+        return;
+    }
 
     esp_matter::cluster::window_covering::feature::lift::config_t liftConfig;
     esp_matter::cluster::window_covering::feature::position_aware_lift::config_t positionAwareLiftConfig;
@@ -85,10 +110,15 @@ void WindowDevice::setupWindowCovering()
 
     // Set the initial position of the accessory
     esp_matter_attr_val_t attrVal = esp_matter_nullable_uint8(0);
-    esp_matter::attribute::get_val(
-        esp_matter::attribute::get(windowCoveringCluster,
-                                   chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercentage::Id),
-        &attrVal);
+    if (esp_matter::attribute::get_val(
+            esp_matter::attribute::get(windowCoveringCluster,
+                                       chip::app::Clusters::WindowCovering::Attributes::CurrentPositionLiftPercentage::Id),
+            &attrVal) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to get initial position lift percentage");
+        return;
+    }
+
     esp_matter_attr_val_t targetAttrVal = esp_matter_nullable_uint16(attrVal.val.u8 * 100);
     esp_matter::attribute::set_val(
         esp_matter::attribute::get(windowCoveringCluster,
@@ -117,6 +147,12 @@ esp_err_t WindowDevice::updateAccessory(uint32_t attributeId)
 
 void WindowDevice::updateAccessoryPosition()
 {
+    if (m_accessory == nullptr)
+    {
+        ESP_LOGE(TAG, "BlindAccessory is null during position update");
+        return;
+    }
+
     uint16_t targetPosition = 100 - getEndpointTargetPosition();
     m_accessory->moveBlindTo(targetPosition);
     ESP_LOGD(TAG, "Moved blind to target position: %d", targetPosition);
@@ -124,7 +160,6 @@ void WindowDevice::updateAccessoryPosition()
 
 esp_err_t WindowDevice::reportEndpoint()
 {
-    ESP_LOGI(TAG, "Reporting endpoint state");
     if (m_accessory != nullptr)
     {
         updateCurrentAndTargetPositions();
@@ -138,6 +173,12 @@ esp_err_t WindowDevice::reportEndpoint()
 
 void WindowDevice::updateCurrentAndTargetPositions()
 {
+    if (m_accessory == nullptr)
+    {
+        ESP_LOGE(TAG, "BlindAccessory is null during update of current and target positions");
+        return;
+    }
+
     setEndpointCurrentPosition(100 - m_accessory->getCurrentPosition());
     setEndpointTargetPosition(100 - m_accessory->getTargetPosition());
     ESP_LOGD(TAG, "Reported endpoint target position: %d", 100 - m_accessory->getTargetPosition());
@@ -165,10 +206,33 @@ uint16_t WindowDevice::getEndpointTargetPosition() const
 
 uint16_t WindowDevice::getAttributeUint16Value(uint32_t attributeId) const
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return 0;
+    }
+
     esp_matter::cluster_t * windowCoveringCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id);
-    esp_matter::attribute_t * attribute           = esp_matter::attribute::get(windowCoveringCluster, attributeId);
+    if (windowCoveringCluster == nullptr)
+    {
+        ESP_LOGE(TAG, "WindowCovering cluster is null");
+        return 0;
+    }
+
+    esp_matter::attribute_t * attribute = esp_matter::attribute::get(windowCoveringCluster, attributeId);
+    if (attribute == nullptr)
+    {
+        ESP_LOGE(TAG, "Attribute is null");
+        return 0;
+    }
+
     esp_matter_attr_val_t attrVal;
-    esp_matter::attribute::get_val(attribute, &attrVal);
+    if (esp_matter::attribute::get_val(attribute, &attrVal) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to get attribute value for ID %d", attributeId);
+        return 0;
+    }
+
     return attrVal.val.u16;
 }
 
@@ -188,8 +252,33 @@ void WindowDevice::setEndpointCurrentPosition(uint16_t position)
 
 void WindowDevice::reportAttribute(uint32_t attributeId, esp_matter_attr_val_t value)
 {
-    esp_matter::attribute::report(esp_matter::endpoint::get_id(m_endpoint), chip::app::Clusters::WindowCovering::Id, attributeId,
-                                  &value);
+    if (m_accessory == nullptr)
+    {
+        ESP_LOGE(TAG, "BlindAccessory is null during report attribute");
+        return;
+    }
+
+    if (m_accessory->getCurrentPosition() != m_accessory->getTargetPosition())
+    {
+        if (esp_matter::lock::chip_stack_lock(portMAX_DELAY) != esp_matter::lock::status::FAILED)
+        {
+            esp_matter::attribute::set_val(
+                esp_matter::attribute::get(esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id),
+                                           attributeId),
+                &value);
+            esp_matter::lock::chip_stack_unlock();
+        }
+        else
+        {
+            ESP_LOGE(TAG, "Failed to lock chip stack");
+        }
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Reporting endpoint state");
+        esp_matter::attribute::report(esp_matter::endpoint::get_id(m_endpoint), chip::app::Clusters::WindowCovering::Id,
+                                      attributeId, &value);
+    }
 }
 
 uint8_t WindowDevice::getEndpointCurrentPosition() const
@@ -199,9 +288,32 @@ uint8_t WindowDevice::getEndpointCurrentPosition() const
 
 uint8_t WindowDevice::getAttributeUint8Value(uint32_t attributeId) const
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return 0;
+    }
+
     esp_matter::cluster_t * windowCoveringCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id);
-    esp_matter::attribute_t * attribute           = esp_matter::attribute::get(windowCoveringCluster, attributeId);
+    if (windowCoveringCluster == nullptr)
+    {
+        ESP_LOGE(TAG, "WindowCovering cluster is null");
+        return 0;
+    }
+
+    esp_matter::attribute_t * attribute = esp_matter::attribute::get(windowCoveringCluster, attributeId);
+    if (attribute == nullptr)
+    {
+        ESP_LOGE(TAG, "Attribute is null");
+        return 0;
+    }
+
     esp_matter_attr_val_t attrVal;
-    esp_matter::attribute::get_val(attribute, &attrVal);
+    if (esp_matter::attribute::get_val(attribute, &attrVal) != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to get attribute value for ID %d", attributeId);
+        return 0;
+    }
+
     return attrVal.val.u8;
 }

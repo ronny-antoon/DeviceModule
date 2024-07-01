@@ -24,11 +24,19 @@ FanDevice::FanDevice(const char * name, FanAccessoryInterface * accessory, esp_m
     if (endpointAggregator != nullptr)
     {
         m_endpoint = initializeBridgedNode(const_cast<char *>(name), endpointAggregator, this);
+        if (m_endpoint == nullptr)
+        {
+            ESP_LOGE(TAG, "Failed to initialize bridged node");
+        }
     }
     else
     {
         ESP_LOGI(TAG, "Creating FanDevice standalone endpoint");
         m_endpoint = initializeStandaloneNode(this);
+        if (m_endpoint == nullptr)
+        {
+            ESP_LOGE(TAG, "Failed to initialize standalone node");
+        }
     }
 
     setupFan();
@@ -36,10 +44,21 @@ FanDevice::FanDevice(const char * name, FanAccessoryInterface * accessory, esp_m
     if (m_accessory != nullptr)
     {
         esp_matter::cluster_t * fanCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::FanControl::Id);
+        if (fanCluster == nullptr)
+        {
+            ESP_LOGE(TAG, "FanControl cluster is null");
+            return;
+        }
+
         esp_matter::attribute_t * percentCurrentAttr =
             esp_matter::attribute::get(fanCluster, chip::app::Clusters::FanControl::Attributes::PercentCurrent::Id);
-        esp_matter_attr_val_t attrVal = esp_matter_uint8(0); // default value for percent current
+        if (percentCurrentAttr == nullptr)
+        {
+            ESP_LOGE(TAG, "PercentCurrent attribute is null");
+            return;
+        }
 
+        esp_matter_attr_val_t attrVal = esp_matter_uint8(0); // default value for percent current
         if (esp_matter::attribute::get_val(percentCurrentAttr, &attrVal) != ESP_OK)
         {
             ESP_LOGE(TAG, "Failed to get percent current attribute");
@@ -54,10 +73,18 @@ FanDevice::FanDevice(const char * name, FanAccessoryInterface * accessory, esp_m
 FanDevice::~FanDevice()
 {
     ESP_LOGI(TAG, "Destroying FanDevice");
+    // Clean up resources if needed
+    // Example: If m_endpoint or m_accessory needs explicit deallocation, do it here
 }
 
 void FanDevice::setupFan()
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return;
+    }
+
     esp_matter::endpoint::fan::config_t fanConfig;
     fanConfig.fan_control.fan_mode_sequence = 5;
     if (esp_matter::endpoint::fan::add(m_endpoint, &fanConfig) != ESP_OK)
@@ -121,9 +148,27 @@ esp_err_t FanDevice::identify()
 
 bool FanDevice::getEndpointPowerState()
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return false;
+    }
+
     esp_matter::cluster_t * fanCluster = esp_matter::cluster::get(m_endpoint, chip::app::Clusters::FanControl::Id);
+    if (fanCluster == nullptr)
+    {
+        ESP_LOGE(TAG, "FanControl cluster is null");
+        return false;
+    }
+
     esp_matter::attribute_t * percentSettingAttr =
         esp_matter::attribute::get(fanCluster, chip::app::Clusters::FanControl::Attributes::PercentSetting::Id);
+    if (percentSettingAttr == nullptr)
+    {
+        ESP_LOGE(TAG, "PercentSetting attribute is null");
+        return false;
+    }
+
     esp_matter_attr_val_t attrVal;
     if (esp_matter::attribute::get_val(percentSettingAttr, &attrVal) != ESP_OK)
     {
@@ -132,11 +177,17 @@ bool FanDevice::getEndpointPowerState()
     }
 
     ESP_LOGD(TAG, "Got endpoint power state: %s", attrVal.val.u8 != 0 ? "true" : "false");
-    return ((attrVal.val.u8) > 0);
+    return (attrVal.val.u8 > 0);
 }
 
 void FanDevice::setEndpointPowerState(bool powerState)
 {
+    if (m_endpoint == nullptr)
+    {
+        ESP_LOGE(TAG, "Endpoint is null");
+        return;
+    }
+
     esp_matter_attr_val_t valFanMode        = esp_matter_enum8(powerState ? 3 : 0);
     esp_matter_attr_val_t valPercentSetting = esp_matter_nullable_uint8(powerState ? 100 : 0);
     esp_matter_attr_val_t valPercentCurrent = esp_matter_uint8(powerState ? 100 : 0);
