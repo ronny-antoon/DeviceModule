@@ -311,7 +311,7 @@ uint8_t WindowDevice::getAttributeUint8Value(uint32_t attributeId) const
     esp_matter_attr_val_t attrVal;
     if (esp_matter::attribute::get_val(attribute, &attrVal) != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to get attribute value for ID %d", attributeId);
+        ESP_LOGE(TAG, "Failed to get attribute value for ID %d", (int) attributeId);
         return 0;
     }
 
