@@ -6,11 +6,10 @@
 #include <esp_matter.h>
 #include <nvs_flash.h>
 
+#include <BlindAccessory.hpp>
 #include <ButtonModule.hpp>
-#include <LightAccessory.hpp>
 #include <RelayModule.hpp>
-
-#include "LightDevice.hpp"
+#include <WindowDevice.hpp>
 
 esp_err_t app_identification_cb(esp_matter::identification::callback_type type, uint16_t endpoint_id, uint8_t effect_id,
                                 uint8_t effect_variant, void * priv_data)
@@ -100,6 +99,15 @@ extern "C" void app_main()
     /* Initialize the Matter stack */
     esp_matter::node::config_t node_config;
     esp_matter::node_t * node = esp_matter::node::create(&node_config, app_attribute_cb, app_identification_cb);
+
+    ButtonModule * buttonUp   = new ButtonModule(GetButtonPin(1));
+    ButtonModule * buttonDown = new ButtonModule(GetButtonPin(2));
+    RelayModule * motorUp     = new RelayModule(GetRelayPin(1));
+    RelayModule * motorDown   = new RelayModule(GetRelayPin(2));
+
+    BlindAccessory * blindAccessory = new BlindAccessory(motorUp, motorDown, buttonUp, buttonDown, 15, 15);
+
+    WindowDevice * windowDevice = new WindowDevice("Window", blindAccessory, nullptr);
 
     // start the Matter stack
     esp_matter::start(app_event_cb);
