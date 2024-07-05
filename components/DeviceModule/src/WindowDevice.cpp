@@ -136,7 +136,10 @@ esp_err_t WindowDevice::updateAccessory(uint32_t attributeId)
     ESP_LOGI(TAG, "Updating accessory state");
     if (m_accessory != nullptr)
     {
-        updateAccessoryPosition();
+        if (attributeId == chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id)
+        {
+            updateAccessoryPosition();
+        }
     }
     else
     {
@@ -181,6 +184,7 @@ void WindowDevice::updateCurrentAndTargetPositions()
 
     setEndpointCurrentPosition(100 - m_accessory->getCurrentPosition());
     setEndpointTargetPosition(100 - m_accessory->getTargetPosition());
+    setEndpointOperationalStatus(m_accessory->getTargetPosition() > m_accessory->getCurrentPosition() ? 5 : 10);
     ESP_LOGD(TAG, "Reported endpoint target position: %d", 100 - m_accessory->getTargetPosition());
 }
 
@@ -250,6 +254,11 @@ void WindowDevice::setEndpointCurrentPosition(uint16_t position)
                     esp_matter_nullable_uint8(position));
 }
 
+void WindowDevice::setEndpointOperationalStatus(uint8_t status)
+{
+    reportAttribute(chip::app::Clusters::WindowCovering::Attributes::OperationalStatus::Id, esp_matter_bitmap8(status));
+}
+
 void WindowDevice::reportAttribute(uint32_t attributeId, esp_matter_attr_val_t value)
 {
     if (m_accessory == nullptr)
@@ -258,27 +267,32 @@ void WindowDevice::reportAttribute(uint32_t attributeId, esp_matter_attr_val_t v
         return;
     }
 
-    if (m_accessory->getCurrentPosition() != m_accessory->getTargetPosition())
-    {
-        if (esp_matter::lock::chip_stack_lock(portMAX_DELAY) != esp_matter::lock::status::FAILED)
-        {
-            esp_matter::attribute::set_val(
-                esp_matter::attribute::get(esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id),
-                                           attributeId),
-                &value);
-            esp_matter::lock::chip_stack_unlock();
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to lock chip stack");
-        }
-    }
-    else
-    {
-        ESP_LOGI(TAG, "Reporting endpoint state");
-        esp_matter::attribute::report(esp_matter::endpoint::get_id(m_endpoint), chip::app::Clusters::WindowCovering::Id,
-                                      attributeId, &value);
-    }
+    // uint8_t offset = m_accessory->getCurrentPosition() > m_accessory->getTargetPosition()
+    //     ? m_accessory->getCurrentPosition() - m_accessory->getTargetPosition()
+    //     : m_accessory->getTargetPosition() - m_accessory->getCurrentPosition();
+    // ESP_LOGI(TAG, "Offset: %d", (int) offset);
+    // if (offset > 5)
+    // {
+
+    //     if (esp_matter::lock::chip_stack_lock(portMAX_DELAY) != esp_matter::lock::status::FAILED)
+    //     {
+    //         esp_matter::attribute::set_val(
+    //             esp_matter::attribute::get(esp_matter::cluster::get(m_endpoint, chip::app::Clusters::WindowCovering::Id),
+    //                                        attributeId),
+    //             &value);
+    //         esp_matter::lock::chip_stack_unlock();
+    //     }
+    //     else
+    //     {
+    //         ESP_LOGE(TAG, "Failed to lock chip stack");
+    //     }
+    // }
+    // else
+    // {
+    ESP_LOGI(TAG, "Reporting endpoint state");
+    esp_matter::attribute::report(esp_matter::endpoint::get_id(m_endpoint), chip::app::Clusters::WindowCovering::Id, attributeId,
+                                  &value);
+    // }
 }
 
 uint8_t WindowDevice::getEndpointCurrentPosition() const

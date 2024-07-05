@@ -138,6 +138,13 @@ private:
     void setEndpointCurrentPosition(uint16_t position);
 
     /**
+     * @brief Sets the operational status of the endpoint.
+     *
+     * @param status The new operational status to set (bit mask).
+     */
+    void setEndpointOperationalStatus(uint8_t status);
+
+    /**
      * @brief Reports the value of an attribute.
      *
      * @param attributeId The ID of the attribute to report.
