@@ -14,7 +14,7 @@ FanDevice::FanDevice(const char * name, FanAccessoryInterface * accessory, esp_m
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setReportCallback([](void * self) { static_cast<FanDevice *>(self)->reportEndpoint(); }, this);
+        m_accessory->setReportCallback([](void * self, bool onlySave) { static_cast<FanDevice *>(self)->reportEndpoint(onlySave); }, this);
     }
     else
     {
@@ -115,7 +115,7 @@ esp_err_t FanDevice::updateAccessory(uint32_t attributeId)
     return ESP_OK;
 }
 
-esp_err_t FanDevice::reportEndpoint()
+esp_err_t FanDevice::reportEndpoint(bool onlySave)
 {
     ESP_LOGI(TAG, "Reporting endpoint state");
     if (m_accessory != nullptr)

@@ -14,7 +14,7 @@ LightDevice::LightDevice(char * name, LightAccessoryInterface * accessory, esp_m
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setReportCallback([](void * self) { static_cast<LightDevice *>(self)->reportEndpoint(); }, this);
+        m_accessory->setReportCallback([](void * self, bool onlySave) { static_cast<LightDevice *>(self)->reportEndpoint(onlySave); }, this);
     }
     else
     {
@@ -80,7 +80,7 @@ esp_err_t LightDevice::updateAccessory(uint32_t attributeId)
     return ESP_OK;
 }
 
-esp_err_t LightDevice::reportEndpoint()
+esp_err_t LightDevice::reportEndpoint(bool onlySave)
 {
     ESP_LOGI(TAG, "Reporting endpoint state");
     if (m_accessory != nullptr)

@@ -33,9 +33,10 @@ public:
 
     /**
      * @brief Reports the endpoint state.
+     * @param onlySave If true, only save the endpoint state without reporting it.
      * @return ESP_OK on success, or an error code on failure.
      */
-    esp_err_t reportEndpoint() override;
+    esp_err_t reportEndpoint(bool onlySave = false) override;
 
     /**
      * @brief Identifies the device.

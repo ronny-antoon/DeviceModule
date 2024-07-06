@@ -13,7 +13,8 @@ ButtonDevice::ButtonDevice(char * name, StatelessButtonAccessoryInterface * acce
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setReportCallback([](void * self) { static_cast<ButtonDevice *>(self)->reportEndpoint(); }, this);
+        m_accessory->setReportCallback(
+            [](void * self, bool onlySave) { static_cast<ButtonDevice *>(self)->reportEndpoint(onlySave); }, this);
     }
     else
     {
@@ -93,7 +94,7 @@ esp_err_t ButtonDevice::updateAccessory(uint32_t attributeId)
     return ESP_OK;
 }
 
-esp_err_t ButtonDevice::reportEndpoint()
+esp_err_t ButtonDevice::reportEndpoint(bool onlySave)
 {
     ESP_LOGI(TAG, "Reporting endpoint state");
 

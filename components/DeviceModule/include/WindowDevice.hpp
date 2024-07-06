@@ -40,10 +40,11 @@ public:
 
     /**
      * @brief Report the state of the endpoint.
+     * @param onlySave If true, only save the endpoint state without reporting it.
      *
      * @return esp_err_t Returns ESP_OK on success, or an error code on failure.
      */
-    esp_err_t reportEndpoint() override;
+    esp_err_t reportEndpoint(bool onlySave) override;
 
     /**
      * @brief Identify the device.
@@ -86,7 +87,7 @@ private:
     /**
      * @brief Updates the current and target positions of the window covering.
      */
-    void updateCurrentAndTargetPositions();
+    void updateCurrentAndTargetPositions(bool onlySave);
 
     /**
      * @brief Updates the accessory position.
@@ -128,21 +129,21 @@ private:
      *
      * @param position The new target position to set.
      */
-    void setEndpointTargetPosition(uint16_t position);
+    void setEndpointTargetPosition(uint16_t position, bool onlySave);
 
     /**
      * @brief Sets the current position of the endpoint.
      *
      * @param position The new current position to set.
      */
-    void setEndpointCurrentPosition(uint16_t position);
+    void setEndpointCurrentPosition(uint16_t position, bool onlySave);
 
     /**
      * @brief Sets the operational status of the endpoint.
      *
      * @param status The new operational status to set (bit mask).
      */
-    void setEndpointOperationalStatus(uint8_t status);
+    void setEndpointOperationalStatus(uint8_t status, bool onlySave);
 
     /**
      * @brief Reports the value of an attribute.
@@ -150,7 +151,7 @@ private:
      * @param attributeId The ID of the attribute to report.
      * @param value The value of the attribute to report.
      */
-    void reportAttribute(uint32_t attributeId, esp_matter_attr_val_t value);
+    void reportAttribute(uint32_t attributeId, esp_matter_attr_val_t value, bool onlySave);
 
     esp_matter::endpoint_t * m_endpoint;   /**< Pointer to the ESP-Matter endpoint. */
     BlindAccessoryInterface * m_accessory; /**< Pointer to the blind accessory interface. */

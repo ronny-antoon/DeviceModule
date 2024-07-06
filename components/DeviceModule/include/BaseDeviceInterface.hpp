@@ -22,9 +22,10 @@ public:
 
     /**
      * @brief Reports the endpoint state.
+     * @param onlySave If true, only save the endpoint state without reporting it.
      * @return ESP_OK on success, or an error code on failure.
      */
-    virtual esp_err_t reportEndpoint() = 0;
+    virtual esp_err_t reportEndpoint(bool onlySave) = 0;
 
     /**
      * @brief Identifies the device.
