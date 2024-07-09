@@ -14,7 +14,8 @@ LightDevice::LightDevice(char * name, LightAccessoryInterface * accessory, esp_m
 
     if (m_accessory != nullptr)
     {
-        m_accessory->setReportCallback([](void * self, bool onlySave) { static_cast<LightDevice *>(self)->reportEndpoint(onlySave); }, this);
+        m_accessory->setReportCallback(
+            [](void * self, bool onlySave) { static_cast<LightDevice *>(self)->reportEndpoint(onlySave); }, this);
     }
     else
     {
@@ -66,6 +67,11 @@ void LightDevice::setupOnOffLight()
 
 esp_err_t LightDevice::updateAccessory(uint32_t attributeId)
 {
+    if (attributeId != chip::app::Clusters::OnOff::Attributes::OnOff::Id)
+    {
+        return ESP_OK;
+    }
+
     ESP_LOGI(TAG, "Updating accessory state");
     bool powerState = retrieveEndpointPowerState();
     if (m_accessory != nullptr)

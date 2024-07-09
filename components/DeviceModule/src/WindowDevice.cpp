@@ -134,13 +134,15 @@ void WindowDevice::setupWindowCovering()
 
 esp_err_t WindowDevice::updateAccessory(uint32_t attributeId)
 {
+    if (attributeId != chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id)
+    {
+        return ESP_OK;
+    }
+
     ESP_LOGI(TAG, "Updating accessory state");
     if (m_accessory != nullptr)
     {
-        if (attributeId == chip::app::Clusters::WindowCovering::Attributes::TargetPositionLiftPercent100ths::Id)
-        {
-            updateAccessoryPosition();
-        }
+        updateAccessoryPosition();
     }
     else
     {
