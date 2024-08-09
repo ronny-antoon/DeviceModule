@@ -6,9 +6,10 @@
 #include <nvs_flash.h>
 
 #include <ButtonModule.hpp>
-#include <DoorLockAccessory.hpp>
-#include <DoorLockDevice.hpp>
 #include <RelayModule.hpp>
+
+#include "TVLifterAccessory.hpp"
+#include "TVLifterDevice.hpp"
 
 esp_err_t app_identification_cb(esp_matter::identification::callback_type type, uint16_t endpoint_id, uint8_t effect_id,
                                 uint8_t effect_variant, void * priv_data)
@@ -39,7 +40,7 @@ esp_err_t app_attribute_cb(esp_matter::attribute::callback_type type, uint16_t e
             {
                 // log
                 ESP_LOGI(__FILENAME__, "app_attribute_cb app_attribute_cb app_attribute_cb");
-                device->updateAccessory(attribute_id);
+                device->updateAccessory(attribute_id, endpoint_id);
             }
         }
         return ESP_OK;
@@ -95,31 +96,28 @@ extern "C" void app_main()
     /* Initialize NVS */
     nvs_flash_init();
 
-    ButtonModule * doorButton1             = new ButtonModule(GetButtonPin(1));
-    RelayModule * doorRelay1               = new RelayModule(GetRelayPin(1));
-    DoorLockAccessory * doorLockAccessory1 = new DoorLockAccessory(doorRelay1, doorButton1, 5);
+    ButtonModule * buttonUp   = new ButtonModule(GetButtonPin(1));
+    ButtonModule * buttonDown = new ButtonModule(GetButtonPin(2));
+    ButtonModule * buttonStop = new ButtonModule(GetButtonPin(3));
 
-    ButtonModule * doorButton2             = new ButtonModule(GetButtonPin(2));
-    RelayModule * doorRelay2               = new RelayModule(GetRelayPin(2));
-    DoorLockAccessory * doorLockAccessory2 = new DoorLockAccessory(doorRelay2, doorButton2, 5);
-
-    ButtonModule * doorButton3             = new ButtonModule(GetButtonPin(3));
-    RelayModule * doorRelay3               = new RelayModule(GetRelayPin(3));
-    DoorLockAccessory * doorLockAccessory3 = new DoorLockAccessory(doorRelay3, doorButton3, 5);
+    RelayModule * relayUp   = new RelayModule(GetRelayPin(1));
+    RelayModule * relayDown = new RelayModule(GetRelayPin(2));
+    RelayModule * relayStop = new RelayModule(GetRelayPin(3));
 
     /* Initialize the Matter stack */
     esp_matter::node::config_t node_config;
     esp_matter::node_t * node = esp_matter::node::create(&node_config, app_attribute_cb, app_identification_cb);
 
-    /* Initialize the Aggregator */
+    // /* Initialize the Aggregator */
     esp_matter::endpoint::aggregator::config_t aggregator_config;
-    esp_matter::endpoint_t * aggregator =
-        esp_matter::endpoint::aggregator::create(node, &aggregator_config, esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE, nullptr);
+    esp_matter::endpoint_t * aggregator1 =
+        esp_matter::endpoint::aggregator::create(node, &aggregator_config, esp_matter::endpoint_flags::ENDPOINT_FLAG_NONE,
+        nullptr);
 
-    /* Initialize the DoorLockDevice */
-    DoorLockDevice * doorLockDevice1 = new DoorLockDevice("DoorLock1", doorLockAccessory1, aggregator);
-    DoorLockDevice * doorLockDevice2 = new DoorLockDevice("DoorLock2", doorLockAccessory2, aggregator);
-    DoorLockDevice * doorLockDevice3 = new DoorLockDevice("DoorLock3", doorLockAccessory3, aggregator);
+    /* Initialize the TVLifterDevice */
+    TVLifterAccessory * accessory = new TVLifterAccessory(relayUp, relayDown, relayStop, buttonUp, buttonDown, buttonStop);
+
+    TVLifterDevice * device = new TVLifterDevice("TV Lifter", accessory, aggregator1);
 
     // start the Matter stack
     esp_matter::start(app_event_cb);

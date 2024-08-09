@@ -20,6 +20,8 @@ public:
      */
     virtual esp_err_t updateAccessory(uint32_t attributeId) = 0;
 
+    virtual esp_err_t updateAccessory(uint32_t attributeId, uint16_t endpointIּd) { return updateAccessory(attributeId); };
+
     /**
      * @brief Reports the endpoint state.
      * @param onlySave If true, only save the endpoint state without reporting it.

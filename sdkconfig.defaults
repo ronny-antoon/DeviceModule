@@ -1,3 +1,19 @@
+# TODO: Fix Cert and Dac for override the naming of accessories and passcode
+############################################################
+# CONFIG_ENABLE_ESP32_FACTORY_DATA_PROVIDER=y
+# CONFIG_ENABLE_ESP32_DEVICE_INSTANCE_INFO_PROVIDER=y
+# CONFIG_CHIP_FACTORY_NAMESPACE_PARTITION_LABEL=nvs
+# CONFIG_FACTORY_PARTITION_DAC_PROVIDE=y
+###########################################################
+# CONFIG_ENABLE_ESP32_DEVICE_INFO_PROVIDER=y
+# CONFIG_FACTORY_COMMISSIONABLE_DATA_PROVIDER=y
+# CONFIG_FACTORY_DEVICE_INSTANCE_INFO_PROVIDER=y
+# CONFIG_FACTORY_DEVICE_INFO_PROVIDER=y
+
+
+
+
+
 # Default to 921600 baud when flashing and monitoring device
 CONFIG_ESPTOOLPY_BAUD_921600B=y
 CONFIG_ESPTOOLPY_BAUD=921600
