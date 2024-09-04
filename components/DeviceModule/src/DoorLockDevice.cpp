@@ -65,6 +65,9 @@ DoorLockDevice::DoorLockDevice(char * name, DoorLockAccessoryInterface * accesso
 
     setupDoorLock();
 
+    // Set initial values (closed)
+    updateEndpointLockState(true);
+
     if (m_accessory != nullptr)
     {
         m_accessory->setState(retrieveEndpointLockState() ? DoorLockAccessoryInterface::DoorLockState::LOCKED
